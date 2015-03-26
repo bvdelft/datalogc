@@ -1,0 +1,5 @@
+ActsFor(bob,alice).
+
+F(X) :- ActsFor(X,alice).
+
+G(bob).
