@@ -1,5 +1,6 @@
-ActsFor(bob,alice).
+parent(alice, bob).
+parent(bob, charlie).
 
-F(X) :- ActsFor(X,alice).
+ancestor(X,Y) :- parent(X,Y).
+ancestor(X,Y) :- ancestor(X,Z), parent(Z,Y).
 
-G(bob).

@@ -1,7 +1,9 @@
 #include <iostream>
 #include <vector>
+#include <map>
 #include <string>
 #include <complex>
+#include <ctype.h>
 
 #include <fstream>
 #include <streambuf>
@@ -36,9 +38,46 @@ void derive_all(vector<atom> facts, vector<clause> rules)
 {
 }
 
+// Assumes length of from and to is equal.
+// To is assumed to be a fact (no variables).
+bool substitute(map<string,string> s, vector<string> from, vector<string> to)
+{
+  if (from.size() == 0)
+    return true;
+  for (unsigned int i = 0; i < from.size(); ++i)
+  {
+    if (islower(from[i][0]))
+    { // Both constants.
+      if (from[i].compare(to[i]) == 0)
+        continue;
+      else
+        return false;
+    }
+    else
+    { // Map variable.
+      s[from[i]] = to[i];
+      // update any variable in from accordingly
+      for (unsigned int j = i+1; j < from.size(); ++j)
+        if (from[j].compare(from[i]) == 0)
+          from[j] = to[i];
+    }
+  } 
+  return true;
+}
+
+
+bool substitute(map<string,string> res, atom from, atom to)
+{
+  if (from.predicate.compare(to.predicate) != 0)
+    return false;
+  if (from.arguments.size() != to.arguments.size())
+    return false;
+  return substitute(res, from.arguments, to.arguments);
+}
 bool canSubstitute(atom a, atom b)
 {
-  return true;
+  map<string,string> res;
+  return substitute(res,a,b);
 }
 
 int main(int argc, char ** argv)
