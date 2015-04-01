@@ -10,6 +10,7 @@
 
 #include "parser.h"
 #include "structures.h"
+#include "bruteforce.h"
 
 using namespace std;
 using namespace client;
@@ -34,10 +35,7 @@ bool isRule(client::clause c) {
   return !c.body.empty();
 }
 
-void derive_all(vector<atom> facts, vector<clause> rules)
-{
-}
-
+/*
 // Assumes length of from and to is equal.
 // To is assumed to be a fact (no variables).
 bool substitute(map<string,string> s, vector<string> from, vector<string> to)
@@ -66,6 +64,69 @@ bool substitute(map<string,string> s, vector<string> from, vector<string> to)
 }
 
 
+void derive_all(vector<atom> &facts, vector<clause> rules)
+{
+  bool new_facts = false;
+  do
+  {
+    new_facts = false;
+    for (vector<clause>::const_iterator i = rules.begin();
+        i < rules.end(); ++i)
+    {
+      vector<map<string, string> > subs;
+      map<string, string> empty;
+      subs.push_back(empty);
+      for (vector<atom>::const_iterator a = (*i).body.begin();
+          a < (*i).body.end(); ++a)
+      { // For each atom in the body
+        vector<map<string, string> > extended;
+        for (vector<map<string, string> >::const_iterator s = subs.begin();
+            s < subs.end(); ++s)
+        { // Preform each substitution so far
+          string pred = a->predicate;
+          vector<string> args = a->arguments;
+          for (unsigned int x = 0; x < args.size(); ++x)
+          { 
+            map<string,string>::const_iterator it = s->find(args[x]);
+            if (it != s->end())
+              args[x] = it->second;
+          }
+          for (vector<atom>::const_iterator f = facts.begin();
+              f < facts.end(); ++f)
+          {
+            if (pred.compare(f->predicate) != 0)
+              continue;
+            map<string,string> sub = *s;
+            if (!substitute(sub, args, f->arguments))
+              continue;
+            extended.push_back(sub);
+            new_facts = true;
+          }
+        }
+        cout << "Extended length> " << extended.size() << endl;
+        subs = extended; // only leave extended substitutions.
+      }
+      // apply on the head, add new ones.
+      for (vector<map<string, string> >::const_iterator s = subs.begin();
+          s < subs.end(); ++s)
+      {
+        vector<string> copy = i->head.arguments;
+        for(unsigned int x = 0; x < copy.size(); ++x) {
+          map<string,string>::const_iterator it = s->find(copy[x]);
+          if (it != s->end())
+            copy[x] = it->second;
+        }
+        atom res;
+        res.predicate = i->head.predicate;
+        res.arguments = copy;
+        facts.push_back(res);
+        cout << "Added fact: " << res.toString() << endl;
+      }
+    }
+    break;
+  } while (new_facts);
+}
+
 bool substitute(map<string,string> res, atom from, atom to)
 {
   if (from.predicate.compare(to.predicate) != 0)
@@ -79,7 +140,7 @@ bool canSubstitute(atom a, atom b)
   map<string,string> res;
   return substitute(res,a,b);
 }
-
+*/
 int main(int argc, char ** argv)
 {
   if (argc != 2) {
@@ -115,9 +176,9 @@ int main(int argc, char ** argv)
   cout << "Facts: " << facts.size() << endl;
   cout << "Rules: " << rules.size() << endl;
   
-  derive_all(facts, rules);
+  //derive_all(facts, rules);
   
-  cout << "Derived facts: " << facts.size() << endl;
+  //cout << "Derived facts: " << facts.size() << endl;
 
     while(true)
   {
@@ -134,13 +195,9 @@ int main(int argc, char ** argv)
     }
     cout << "Result set:" << endl;
     client::clause query = queries[0];
-    for (vector<atom>::const_iterator i = facts.begin(); i != facts.end(); ++i)
-    {
-      if (canSubstitute(query.head, (*i)))
-      {
-        cout << (i->toString()) << endl;
-      }
-    }
+    vector<atom> res = bruteforce(query.head, facts, rules);
+    for (atom a : res)
+      cout << a.toString() << endl;
   }
 
 
