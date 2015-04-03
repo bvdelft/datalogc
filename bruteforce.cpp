@@ -141,6 +141,10 @@ vector<atom> derive_iter(vector<atom> edb, vector<clause> program)
   return idb;
 }
 
+/*
+   Return a vector with the same elements in "original", except those that
+   occur in remove.
+ */
 vector<atom> remove_all(vector<atom> original, vector<atom> remove)
 {
   vector<atom> result = original;
@@ -163,6 +167,10 @@ vector<atom> remove_all(vector<atom> original, vector<atom> remove)
   return result;
 }
 
+/*
+   Call derive_iter, extend the db until no new facts are derived. Return
+   total set of facts (initial + derived).
+ */
 vector<atom> derive_all(vector<atom> edb, vector<clause> program)
 {
   bool new_facts;
@@ -189,6 +197,10 @@ vector<atom> derive_all(vector<atom> edb, vector<clause> program)
   return edb;
 }
 
+/*
+   Bruteforce derive all the facts from the given "edb" and "program". Return
+   those facts that match the query.
+ */
 vector<atom> bruteforce(atom query, vector<atom> edb, vector<clause> program)
 {
   debug("Entered bruteforce()");

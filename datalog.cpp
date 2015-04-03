@@ -70,11 +70,8 @@ int main(int argc, char ** argv)
   cout << "Facts: " << facts.size() << endl;
   cout << "Rules: " << rules.size() << endl;
   
-  //derive_all(facts, rules);
-  
-  //cout << "Derived facts: " << facts.size() << endl;
 
-    while(true)
+  while(true)
   {
     cout << "Query > ";
     string str;

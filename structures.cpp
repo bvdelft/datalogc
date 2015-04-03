@@ -21,17 +21,17 @@ namespace client
 
   string atom::toString () const
   {
-      std::string res = predicate + "(";
-      for (std::vector<std::string>::const_iterator i = arguments.begin();
-          i != arguments.end();)
-      {
-        res = res + (*i);
-        if (++i != arguments.end())
-          res = res + ",";
-      }
-      res += ")";
-      return res;
+    std::string res = predicate + "(";
+    for (std::vector<std::string>::const_iterator i = arguments.begin();
+        i != arguments.end();)
+    {
+      res = res + (*i);
+      if (++i != arguments.end())
+        res = res + ",";
     }
+    res += ")";
+    return res;
+  }
 
   bool atom::operator == (const atom &a) const
   {
