@@ -1,5 +1,6 @@
 #include <string>
 #include <vector>
+#include <ctype.h>
 
 #include "structures.h"
 
@@ -7,6 +8,16 @@ namespace client
 {
 
   using namespace std;
+
+  bool atom::isVariable(int i) const
+  {
+    return isupper(arguments[i][0]);
+  }
+
+  bool atom::isConstant(int i) const
+  {
+    return !isVariable(i);
+  }
 
   string atom::toString () const
   {

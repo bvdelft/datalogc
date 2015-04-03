@@ -18,7 +18,7 @@ datalog.o: datalog.cpp bruteforce.h structures.h
 parser.o: parser.cpp structures.h
 	$(CC) $(CFLAGS) -c parser.cpp
 
-structures.o: structures.cpp
+structures.o: structures.cpp structures.h
 	$(CC) $(CFLAGS) -c structures.cpp
 
 clean:

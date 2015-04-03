@@ -1,9 +1,8 @@
 #include <vector>
-#include <iostream> // debugging
+// #include <iostream> // debugging
 #include <map>
 #include <string>
 #include <set>
-#include <ctype.h>
 
 #include "structures.h"
 
@@ -27,9 +26,11 @@ void printdb(string name, vector<atom> db)
   */
 }
 
+/*
+ * Substitute arguments in atom "a" according to substitution "sub".
+ */
 atom apply_sub(map<string, string> sub, atom a)
 {
-  // debug("apply_sub");
   atom res;
   res.predicate = a.predicate;
   vector<string> args;
@@ -45,16 +46,20 @@ atom apply_sub(map<string, string> sub, atom a)
   return res;
 }
 
+/*
+   Find a mapping from the variables in atom "a" to the constants in "fact"
+   (assuming that there are no variables in "fact"). Extends the substitution
+   "sub" accordingly, returning false if no substitution could be found.
+ */
 bool find_sub(atom a, atom fact, map<string, string> &sub)
 {
-  // debug("find_sub");
   if (a.predicate.compare(fact.predicate) != 0)
     return false;
   if (a.arguments.size() != fact.arguments.size())
     return false;
   for (unsigned int i = 0; i < a.arguments.size(); i++)
   {
-    if (islower(a.arguments[i][0])) // constant
+    if (a.isConstant(i)) // islower(a.arguments[i][0])) // constant
     {
       if (fact.arguments[i].compare(a.arguments[i]) != 0)
         return false;
@@ -68,6 +73,10 @@ bool find_sub(atom a, atom fact, map<string, string> &sub)
   return true;
 }
 
+/*
+   Collect all substitutions that make all atoms in "body" ground to facts in
+   the provided EDB.
+ */
 vector<map<string, string> > find_all_subs(
     vector<atom> edb, vector<atom> body)
 {
@@ -83,7 +92,7 @@ vector<map<string, string> > find_all_subs(
       atom a_ = apply_sub(sub, a);
       for (atom fact : edb)
       {
-        map<string, string> s = sub; // = clone?
+        map<string, string> s = sub;
         if (find_sub(a_, fact, s))
           nsubs.push_back(s);
       }
@@ -93,6 +102,9 @@ vector<map<string, string> > find_all_subs(
   return subs;
 }
 
+/*
+   Return only those atoms in "db" to which "query" can be substituted.
+ */
 vector<atom> filter_match(atom query, vector<atom> db)
 {
   debug("filter_match");
@@ -112,6 +124,10 @@ vector<atom> filter_match(atom query, vector<atom> db)
   return result;
 }
 
+/*
+   One round of deriving all possible facts from "edb" using each rule in
+   "program".
+ */
 vector<atom> derive_iter(vector<atom> edb, vector<clause> program)
 {
   debug("derive_iter");

@@ -8,9 +8,13 @@ namespace client
   {
     std::string predicate;
     std::vector<std::string> arguments;
-    std::string toString() const; 
+
+    std::string toString() const;
+    bool isVariable(int i) const;
+    bool isConstant(int i) const;
+
     bool operator == (const atom &a) const; 
-    bool operator < (const atom &a) const; 
+    bool operator < (const atom &a) const;
   };
 
   struct clause
